@@ -1,0 +1,9 @@
+<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/site.css')}}">
+<script src="{{url_for('static',filename='js/site.js')}}"></script>
+
+<p>Last Refresh Time: {{ last_refresh }}</p>
+
+<button type="submit" onclick="refreshMap()">Refresh Map</button>
+<div id="loader" class="loader" hidden></div>
+
+<div id="error" style="color: red;"></div>

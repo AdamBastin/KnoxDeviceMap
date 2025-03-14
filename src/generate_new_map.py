@@ -49,6 +49,8 @@ MINUTES_BEFORE_MAX_DIM = int(os.getenv("MINUTES_BEFORE_MAX_DIM")) or 60
 
 CATEGORY_LIST = os.getenv("CATEGORY_LIST").split(',') or None
 
+PLOTTED_DEVICES = 0
+
 def GetKnoxBearerToken():        
     headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
@@ -131,6 +133,8 @@ def plotDeviceLocation(device,deviceLocation, foliumMap):
                             tooltip=tooltip,
                             opacity=opacity,
                             popup=popup).add_to(foliumMap)
+    global PLOTTED_DEVICES
+    PLOTTED_DEVICES += 1
 
 def getOpacityDependingOnTime(lastConnectionDate):
     # The older the last connection date, the more transparent the marker
@@ -150,41 +154,15 @@ def createFoliumMap():
     map = folium.Map(location=(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), zoom_start=DEFAULT_ZOOM)
     if DEFAULT_MARKER:        
         folium.Marker(location=(DEFAULT_MARKER_LATITUDE, DEFAULT_MARKER_LONGITUDE), popup=DEFAULT_MARKER_NAME).add_to(map)
+        
+    #TODO: Different search method
     Geocoder().add_to(map)
+    
     folium.plugins.Fullscreen().add_to(map)
     TagFilterButton(CATEGORY_LIST).add_to(map)
     
-    # Define the legend's HTML using Branca 
-    #TODO: Make into table
-    legend_html = '''
-    {% macro html(this, kwargs) %}
-    <div style="">
-        &nbsp; <b>Legend (Placeholder data used)</b> <br>
-        <table class="legend">
-            <tr class="legend-row">
-                <td class="legend-key">RN</td>
-                <td class="legend-value><i class="fa fa-circle" style="color:#3caadc"></i></td>
-            </tr>
-            <tr class="legend-row">
-                <td class="legend-key">LPN</td>
-                <td class="legend-value><i class="fa fa-circle" style="color:#73b02e"></i></td>
-            </tr>
-            <tr class="legend-row">
-                <td class="legend-key">MSW</td>
-                <td class="legend-value><i class="fa fa-circle" style="color:#d43f30"></i></td>
-            </tr>
-            <tr class="legend-row">
-                <td class="legend-key">CNA</td>
-                <td class="legend-value><i class="fa fa-circle" style="color:#d153b8"></i></td>
-            </tr>
-        </table>
-    </div>
-    {% endmacro %}
-    '''
-    legend = branca.element.MacroElement()
-    legend._template = branca.element.Template(legend_html)
-    
-    map.get_root().add_child(legend)
+    # Could add legend for categories, if wanted    
+    # map.get_root().add_child(legend)
     return map
 
 def retrieveAndPlotDeviceLocation(device, bearerToken, foliumMap):
@@ -195,13 +173,16 @@ def retrieveAndPlotDeviceLocation(device, bearerToken, foliumMap):
         print(f"Failed to retrieve location for {device['userName']}")
 
 def main():
+    global PLOTTED_DEVICES
+    PLOTTED_DEVICES = 0
+    
     bearerToken = GetKnoxBearerToken()
     deviceList = GetKnoxDeviceList(bearerToken)
 
     onlineDevices = []
     for device in deviceList:        
         # Only include devices that have been connected in the last {HOURS_BEFORE_NOT_SHOWN} hours
-        if (device["lastConnectionDate"]["time"] > (datetime.now() - timedelta(hours=HOURS_BEFORE_NOT_SHOWN)).timestamp()):
+        if ((device["lastConnectionDate"]["time"] / 1000) > (datetime.now() - timedelta(hours=HOURS_BEFORE_NOT_SHOWN)).timestamp()):
             onlineDevices.append(device)
             
     print(f"Total devices: {len(deviceList)}")
@@ -224,6 +205,7 @@ def main():
     for thread in threads:
         thread.join()
     
+    print(f"Plotted devices: {PLOTTED_DEVICES}")
     foliumMap.save("./templates/map.html")
     
 if __name__ == "__main__":

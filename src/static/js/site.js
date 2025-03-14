@@ -22,9 +22,9 @@ function refreshMap() {
 };
 
 function hideLoaders(){
-    document.getElementById("loader").style.display = 'none';
+    document.getElementById("loader-container").style.display = 'none';
 }
 
 function showLoaders(){
-    document.getElementById("loader").style.display = 'block';
+    document.getElementById("loader-container").style.display = 'flex';
 }

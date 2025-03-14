@@ -1,5 +1,5 @@
-# Knox Worker Map
-This web application combines all of your Knox Manage devices onto a single map with their most recent location. It can be configured to filter different categories based on the tags inside of Knox Manage.
+# Knox Device Map
+This web application combines all of your Samsung Knox Manage devices onto a single map with their most recent location. It can be configured to filter different tags based on device tags inside of Knox Manage.
 
 # Setup
 ## 1. Docker or Manual

@@ -1,5 +1,6 @@
 import branca
 import folium
+import folium.plugins
 import requests
 import json
 import os
@@ -9,7 +10,7 @@ import random
 import generate_env_file
 
 from time import strftime, localtime
-from folium.plugins import Geocoder, TagFilterButton
+from folium.plugins import Geocoder, TagFilterButton, Fullscreen
 from datetime import datetime, timedelta
 
 env_file_path = os.path.join(os.path.dirname(__file__), '.env')
@@ -150,21 +151,33 @@ def createFoliumMap():
     if DEFAULT_MARKER:        
         folium.Marker(location=(DEFAULT_MARKER_LATITUDE, DEFAULT_MARKER_LONGITUDE), popup=DEFAULT_MARKER_NAME).add_to(map)
     Geocoder().add_to(map)
+    folium.plugins.Fullscreen().add_to(map)
     TagFilterButton(CATEGORY_LIST).add_to(map)
     
     # Define the legend's HTML using Branca 
     #TODO: Make into table
     legend_html = '''
     {% macro html(this, kwargs) %}
-    <div style="position: fixed; 
-        bottom: 50px; left: 50px; width: 200px; height: 110px; 
-        border:2px solid grey; z-index:9999; font-size:14px;
-        background-color:white; opacity: 0.85;">
+    <div style="">
         &nbsp; <b>Legend (Placeholder data used)</b> <br>
-        &nbsp; RN &nbsp; <i class="fa fa-circle" style="color:#3caadc"></i><br>
-        &nbsp; LPN &nbsp; <i class="fa fa-circle" style="color:#73b02e"></i><br>
-        &nbsp; MSW &nbsp; <i class="fa fa-circle" style="color:#d43f30"></i><br>
-        &nbsp; CNA &nbsp; <i class="fa fa-circle" style="color:#d153b8"></i><br>
+        <table class="legend">
+            <tr class="legend-row">
+                <td class="legend-key">RN</td>
+                <td class="legend-value><i class="fa fa-circle" style="color:#3caadc"></i></td>
+            </tr>
+            <tr class="legend-row">
+                <td class="legend-key">LPN</td>
+                <td class="legend-value><i class="fa fa-circle" style="color:#73b02e"></i></td>
+            </tr>
+            <tr class="legend-row">
+                <td class="legend-key">MSW</td>
+                <td class="legend-value><i class="fa fa-circle" style="color:#d43f30"></i></td>
+            </tr>
+            <tr class="legend-row">
+                <td class="legend-key">CNA</td>
+                <td class="legend-value><i class="fa fa-circle" style="color:#d153b8"></i></td>
+            </tr>
+        </table>
     </div>
     {% endmacro %}
     '''

@@ -2,6 +2,7 @@
 <script src="{{url_for('static',filename='js/site.js')}}"></script>
 
 <div class="action-bar-items">
+    <div class="settings-button"><a href="{{ url_for('config_page') }}" class="btn">⚙️</a></div>
     <p>Last updated: {{ last_refresh }}</p>    
     <button type="submit" onclick="refreshMap()">Refresh Map</button>
     <div id="error" style="color: red;"></div>

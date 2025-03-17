@@ -98,3 +98,49 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.btn{
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.config-table{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.config-table {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+td label{
+  font-weight: bold;
+  text-align: right;
+  padding: 15px;
+  width: 200px;
+}
+
+td input {
+  width: 400px;
+  padding: 5px;
+  border: 1px solid #ddd;
+}

@@ -1,0 +1,85 @@
+<link rel="stylesheet" type="text/css" href="{{url_for('static',filename='css/site.css')}}">
+<script src="{{url_for('static',filename='js/site.js')}}"></script>
+
+
+<h1>Update Configuration</h1>
+<form method="POST">
+    <table class="config-table">
+        <tr>
+            <td><label for="KNOX_SERVER_CODE">Knox Server Code:</label></td>
+            <td><input type="text" id="KNOX_SERVER_CODE" name="KNOX_SERVER_CODE" value="{{ env.KNOX_SERVER_CODE }}"></td>
+        </tr>
+        <tr>
+            <td><label for="KNOX_CLIENT_ID">Knox Client ID:</label></td>
+            <td><input type="text" id="KNOX_CLIENT_ID" name="KNOX_CLIENT_ID" value="{{ env.KNOX_CLIENT_ID }}"></td>
+        </tr>
+        <tr>
+            <td><label for="KNOX_API_KEY">Knox API Key:</label></td>
+            <td><input type="text" id="KNOX_API_KEY" name="KNOX_API_KEY" value="{{ env.KNOX_API_KEY }}"></td>
+        </tr>
+        <tr>
+            <td><label for="DEFAULT_LATITUDE">Default Latitude:</label></td>
+            <td><input type="text" id="DEFAULT_LATITUDE" name="DEFAULT_LATITUDE" value="{{ env.DEFAULT_LATITUDE }}"></td>
+        </tr>
+        <tr>
+            <td><label for="DEFAULT_LONGITUDE">Default Longitude:</label></td>
+            <td><input type="text" id="DEFAULT_LONGITUDE" name="DEFAULT_LONGITUDE" value="{{ env.DEFAULT_LONGITUDE }}"></td>
+        </tr>
+        <tr>
+            <td><label for="DEFAULT_ZOOM">Default Zoom:</label></td>
+            <td><input type="text" id="DEFAULT_ZOOM" name="DEFAULT_ZOOM" value="{{ env.DEFAULT_ZOOM }}"></td>
+        </tr>
+        <tr>
+            <td><label for="DEFAULT_MARKER">Default Marker (True/False):</label></td>
+            <td><input type="text" id="DEFAULT_MARKER" name="DEFAULT_MARKER" value="{{ env.DEFAULT_MARKER }}"></td>
+        </tr>
+        <tr>
+            <td><label for="DEFAULT_MARKER_LATITUDE">Default Marker Latitude:</label></td>
+            <td><input type="text" id="DEFAULT_MARKER_LATITUDE" name="DEFAULT_MARKER_LATITUDE" value="{{ env.DEFAULT_MARKER_LATITUDE }}"></td>
+        </tr>
+        <tr>
+            <td><label for="DEFAULT_MARKER_LONGITUDE">Default Marker Longitude:</label></td>
+            <td><input type="text" id="DEFAULT_MARKER_LONGITUDE" name="DEFAULT_MARKER_LONGITUDE" value="{{ env.DEFAULT_MARKER_LONGITUDE }}"></td>
+        </tr>
+        <tr>
+            <td><label for="DEFAULT_MARKER_NAME">Default Marker Name:</label></td>
+            <td><input type="text" id="DEFAULT_MARKER_NAME" name="DEFAULT_MARKER_NAME" value="{{ env.DEFAULT_MARKER_NAME }}"></td>
+        </tr>
+        <tr>
+            <td><label for="HOURS_BEFORE_NOT_SHOWN">Hours Before Not Shown:</label></td>
+            <td><input type="text" id="HOURS_BEFORE_NOT_SHOWN" name="HOURS_BEFORE_NOT_SHOWN" value="{{ env.HOURS_BEFORE_NOT_SHOWN }}"></td>
+        </tr>
+        <tr>
+            <td><label for="MINUTES_BEFORE_MAX_DIM">Minutes Before Max Dim:</label></td>
+            <td><input type="text" id="MINUTES_BEFORE_MAX_DIM" name="MINUTES_BEFORE_MAX_DIM" value="{{ env.MINUTES_BEFORE_MAX_DIM }}"></td>
+        </tr>
+        <tr>
+            <td><label for="CATEGORY_LIST">Category List (comma-separated):</label></td>
+            <td><input type="text" id="CATEGORY_LIST" name="CATEGORY_LIST" value="{{ env.CATEGORY_LIST }}"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="text-align: center;">
+                <button type="submit" class="btn">Save</button>
+            </td>
+            <td></td>
+        </tr>         
+            <td colspan="2" style="text-align: center;">
+                <a href="{{ url_for('main_page') }}" class="btn">Home</a>
+            </td>
+            <td></td>
+        </tr>
+        <!-- Display flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <tr>
+                    <td colspan="2" style="text-align: center;">
+                        <div id="flash-message" class="{{ category }}">{{ message }}</li>
+                    </td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </table>
+    
+</form>

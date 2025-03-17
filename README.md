@@ -23,7 +23,7 @@ Docker Compose
 version: '3.9'
 services:
     knox-device-map:
-        image: 'adambastin/knox-device-map:latest'
+        image: 'adambastin/knox-device-map'
         container_name: knox-device-map
         restart: always
         ports:
@@ -32,7 +32,7 @@ services:
 
 Docker run
 
-`docker run -p 5000:5000 --restart always --name=knox-device-map adambastin/knox-device-map:latest`
+`docker run -p 5000:5000 --restart always --name=knox-device-map adambastin/knox-device-map`
 
 ## 2. Setup Knox Manage API Key
 1. After startup, click the settings wheel in the top right

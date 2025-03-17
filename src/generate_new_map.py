@@ -61,12 +61,8 @@ def get_knox_bearer_token():
     headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
     }
-    print(KNOX_URL)
-    print(KNOX_CLIENT_ID)
-    print(KNOX_API_KEY)
     payload = f'client_id={KNOX_CLIENT_ID}&client_secret={str(KNOX_API_KEY)}&grant_type=client_credentials'
     response = requests.post(KNOX_URL + "/emm/oauth/token", headers=headers, data=payload)
-    print(response)
     return response.json()['access_token']
 
 def get_knox_device_list(bearerToken):

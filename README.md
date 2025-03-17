@@ -12,14 +12,13 @@ This web application combines all of your Samsung Knox Manage devices onto a sin
 ### Docker 
 (Dockerfile coming soon)
 ## 2. Setup .env file
-After the first time the application is ran, it will generate a new `.env` file.
-
-Open the `.env` file that is inside the `src` directory.
+After startup, click the settings wheel in the top right
 
 Populate the mandatory KNOX fields and optionally, the default map view fields.
 
 ## Screenshots
-Coming soon
+![image](https://github.com/user-attachments/assets/cf4b2422-e4af-4625-9861-99193baf495f)
+
 
 ## Libraries
 - Folium

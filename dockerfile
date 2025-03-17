@@ -1,18 +1,17 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM python:3.12.9-slim
 
-# Set the working directory in the container
-WORKDIR /usr/src/app
+WORKDIR /usr/
 
-# Copy the current directory contents into the container at /app
-COPY . .
+RUN git clone https://github.com/AdamBastin/KnoxDeviceMap.git
 
-# Install any needed packages specified in requirements.txt
+WORKDIR /usr/KnoxDeviceMap
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Make port 80 available to the world outside this container
-EXPOSE 80
+EXPOSE 5000
+
+WORKDIR /usr/KnoxDeviceMap/src
 
 # Run knox_device_map.py when the container launches
-WORKDIR /usr/src/app/src
-CMD ["python", "knox_device_map.py"]
+ENV FLASK_APP=knox_device_map.py
+CMD ["python", "-m", "flask", "run", "--host=0.0.0.0"]

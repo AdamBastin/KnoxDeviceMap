@@ -25,7 +25,7 @@ def Generate():
     CATEGORY_LIST = Category1,Category2,Category3,Category4
     """
 
-    env_file_path = os.path.join(os.path.dirname(__file__), '.env')
+    env_file_path = os.path.join(os.path.dirname(__file__), '/config/.env')
 
     with open(env_file_path, 'w') as env_file:
         env_file.write(env_content)

@@ -13,13 +13,14 @@ from time import strftime, localtime
 from folium.plugins import Geocoder, TagFilterButton, Fullscreen
 from datetime import datetime, timedelta
 
-env_file_path = os.path.join(os.path.dirname(__file__), '.env')
+env_file_path = os.path.join(os.path.dirname(__file__), '/config/.env')
 if not os.path.exists(env_file_path):
     print(".env file not found")
     print("Generating new .env file")
     try:
         generate_env_file.Generate()
         print("Please fill in the .env file with the necessary information")
+        print("Then restart the application")
         print("Exiting...")
     except:
         print("Failed to generate .env file")

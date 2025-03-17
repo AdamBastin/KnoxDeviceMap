@@ -18,7 +18,22 @@ This web application combines all of your Samsung Knox Manage devices onto a sin
 4. **Run web app** `py knox_worker_map.py`
 
 ### Docker 
-(Dockerfile coming soon)
+Docker Compose
+```
+version: '3.9'
+services:
+    knox-device-map:
+        image: 'adambastin/knox-device-map:latest'
+        container_name: knox-device-map
+        restart: always
+        ports:
+            - '5000:5000'
+```
+
+Docker run
+
+`docker run -p 5000:5000 --restart always --name=knox-device-map adambastin/knox-device-map:latest`
+
 ## 2. Setup Knox Manage API Key
 1. After startup, click the settings wheel in the top right
 

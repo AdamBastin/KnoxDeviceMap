@@ -84,10 +84,10 @@ def config_page():
         return redirect(url_for('config_page'))
 
     # Load current environment variables
-    dotenv.load_dotenv(env_file_path)
+    dotenv.load_dotenv(env_file_path, override=True)
     current_env = {
-        "KNOX_SERVER_CODE": os.getenv("KNOX_SERVER_CODE", ""),
-        "KNOX_CLIENT_ID": os.getenv("KNOX_CLIENT_ID", ""),
+        "KNOX_SERVER_CODE": os.getenv("KNOX_SERVER_CODE", "us01"),
+        "KNOX_CLIENT_ID": os.getenv("KNOX_CLIENT_ID", "client@tenant.org"),
         "KNOX_API_KEY": os.getenv("KNOX_API_KEY", ""),
         "DEFAULT_LATITUDE": os.getenv("DEFAULT_LATITUDE", ""),
         "DEFAULT_LONGITUDE": os.getenv("DEFAULT_LONGITUDE", ""),

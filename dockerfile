@@ -2,6 +2,8 @@ FROM python:3.12.9-slim
 
 WORKDIR /usr/
 
+RUN apt-get update && apt-get install -y git
+
 RUN git clone https://github.com/AdamBastin/KnoxDeviceMap.git
 
 WORKDIR /usr/KnoxDeviceMap

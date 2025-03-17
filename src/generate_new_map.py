@@ -1,3 +1,4 @@
+import urllib.parse
 import branca
 import folium
 import folium.plugins
@@ -7,60 +8,68 @@ import os
 import dotenv
 import threading
 import random
-import generate_env_file
+import urllib
 
 from time import strftime, localtime
 from folium.plugins import Geocoder, TagFilterButton, Fullscreen
 from datetime import datetime, timedelta
 
-env_file_path = os.path.join(os.path.dirname(__file__), '/config/.env')
-if not os.path.exists(env_file_path):
-    print(".env file not found")
-    print("Generating new .env file")
-    try:
-        generate_env_file.Generate()
-        print("Please fill in the .env file with the necessary information")
-        print("Then restart the application")
-        print("Exiting...")
-    except:
-        print("Failed to generate .env file")
-    exit()
+def load_environment_variables():
+    global KNOX_URL, KNOX_CLIENT_ID, KNOX_API_KEY, KNOX_SERVER_CODE
+    global DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_ZOOM
+    global DEFAULT_MARKER, DEFAULT_MARKER_LATITUDE, DEFAULT_MARKER_LONGITUDE, DEFAULT_MARKER_NAME
+    global HOURS_BEFORE_NOT_SHOWN, MINUTES_BEFORE_MAX_DIM, CATEGORY_LIST
+
+    env_file_path = os.path.join(os.path.dirname(__file__), 'config/.env')
+    if not os.path.exists(env_file_path):
+        print(".env file not found")        
+        print("Please download the .env file from the repository")
+        print("Then restart the application")        
+        exit()
     
-# Load the environment variables from .env file
-dotenv.load_dotenv()
+    # Load the environment variables from .env file
+    dotenv.load_dotenv(dotenv_path="./config/.env")
 
-KNOX_URL = os.getenv("KNOX_URL")
-KNOX_CLIENT_ID = os.getenv("KNOX_CLIENT_ID")
-KNOX_API_KEY = os.getenv("KNOX_API_KEY")
+    #https://us02.manage.samsungknox.com/
+    KNOX_SERVER_CODE = os.getenv("KNOX_SERVER_CODE")
+    KNOX_CLIENT_ID = os.getenv("KNOX_CLIENT_ID")
+    KNOX_API_KEY = urllib.parse.quote_plus(os.getenv("KNOX_API_KEY"))
+    KNOX_URL = f"https://{KNOX_SERVER_CODE}.manage.samsungknox.com/"
 
-if KNOX_URL is None or KNOX_CLIENT_ID is None or KNOX_API_KEY is None:
-    print("KNOX_URL, KNOX_CLIENT_ID, or KNOX_API_KEY environment variables not set")
-    exit()
+    if KNOX_SERVER_CODE is None or KNOX_CLIENT_ID is None or KNOX_API_KEY is None:
+        print("KNOX_URL, KNOX_CLIENT_ID, or KNOX_API_KEY environment variables not set")
+        exit()
 
-DEFAULT_LATITUDE = os.getenv("DEFAULT_LATITUDE") or 0
-DEFAULT_LONGITUDE = os.getenv("DEFAULT_LONGITUDE") or 0
-DEFAULT_ZOOM = os.getenv("DEFAULT_ZOOM") or 20
-DEFAULT_MARKER = bool(os.getenv("DEFAULT_MARKER")) or False
-DEFAULT_MARKER_LATITUDE = os.getenv("DEFAULT_MARKER_LATITUDE") or 0
-DEFAULT_MARKER_LONGITUDE = os.getenv("DEFAULT_MARKER_LONGITUDE") or 0
-DEFAULT_MARKER_NAME = os.getenv("DEFAULT_MARKER_NAME") or ''
+    DEFAULT_LATITUDE = float(os.getenv("DEFAULT_LATITUDE") or 0)
+    DEFAULT_LONGITUDE = float(os.getenv("DEFAULT_LONGITUDE") or 0)
+    DEFAULT_ZOOM = int(os.getenv("DEFAULT_ZOOM") or 20)
+    DEFAULT_MARKER = bool(os.getenv("DEFAULT_MARKER")) or False
+    DEFAULT_MARKER_LATITUDE = float(os.getenv("DEFAULT_MARKER_LATITUDE") or 0)
+    DEFAULT_MARKER_LONGITUDE = float(os.getenv("DEFAULT_MARKER_LONGITUDE") or 0)
+    DEFAULT_MARKER_NAME = os.getenv("DEFAULT_MARKER_NAME") or ''
 
-HOURS_BEFORE_NOT_SHOWN = int(os.getenv("HOURS_BEFORE_NOT_SHOWN")) or 5
-MINUTES_BEFORE_MAX_DIM = int(os.getenv("MINUTES_BEFORE_MAX_DIM")) or 60
+    HOURS_BEFORE_NOT_SHOWN = int(os.getenv("HOURS_BEFORE_NOT_SHOWN") or 5)
+    MINUTES_BEFORE_MAX_DIM = int(os.getenv("MINUTES_BEFORE_MAX_DIM") or 60)
 
-CATEGORY_LIST = os.getenv("CATEGORY_LIST").split(',') or None
+    try:
+        CATEGORY_LIST = os.getenv("CATEGORY_LIST").split(',') or []
+    except:
+        print("CATEGORY_LIST environment variable not set")
+        CATEGORY_LIST = []
 
-PLOTTED_DEVICES = 0
-
-def GetKnoxBearerToken():        
+def get_knox_bearer_token():        
     headers = {
     'Content-Type': 'application/x-www-form-urlencoded'
     }
-    payload = f'client_id={KNOX_CLIENT_ID}&client_secret={KNOX_API_KEY}&grant_type=client_credentials'
-    response = requests.post(KNOX_URL + "/emm/oauth/token", headers=headers,data=payload)
+    print(KNOX_URL)
+    print(KNOX_CLIENT_ID)
+    print(KNOX_API_KEY)
+    payload = f'client_id={KNOX_CLIENT_ID}&client_secret={str(KNOX_API_KEY)}&grant_type=client_credentials'
+    response = requests.post(KNOX_URL + "/emm/oauth/token", headers=headers, data=payload)
+    print(response)
     return response.json()['access_token']
 
-def GetKnoxDeviceList(bearerToken):
+def get_knox_device_list(bearerToken):
     if bearerToken == "":
         print("No bearer token")
         return None
@@ -87,7 +96,7 @@ def GetKnoxDeviceList(bearerToken):
             data['start'] = len(devices)
             response = requests.post(KNOX_URL + "emm/oapi/device/selectDeviceList", headers=headers, data=data)
     
-def GetDeviceLocation(deviceId, bearerToken):
+def get_device_location(deviceId, bearerToken):
     headers = {
         'content-type': 'application/x-www-form-urlencoded',
         'Authorization' : f'Bearer {bearerToken}'
@@ -100,7 +109,7 @@ def GetDeviceLocation(deviceId, bearerToken):
     response = requests.post(KNOX_URL + "emm/oapi/device/selectDeviceLocation", headers=headers, data=data)
     return response.json()
 
-def plotDeviceLocation(device,deviceLocation, foliumMap):  
+def plot_device_location(device,deviceLocation, foliumMap):  
     if deviceLocation['resultCode'] != '0':
         return
     
@@ -123,7 +132,7 @@ def plotDeviceLocation(device,deviceLocation, foliumMap):
             CATEGORY_LIST[3]: "purple"
         }.get(tag, "gray")
     
-    opacity = getOpacityDependingOnTime(timestamp)
+    opacity = calculate_marker_opacity(timestamp)
     tooltip = f'{tag} - {device["userName"]}'
     popupText = folium.IFrame(f"User: {device['userName']}<br>Tablet#: {device['userId']}<br>Last call-in: {datetime.fromtimestamp(timestamp).strftime('%I:%M %p')}")
     popup = folium.Popup(popupText, min_width=300, max_width=300, max_height=60)
@@ -137,7 +146,7 @@ def plotDeviceLocation(device,deviceLocation, foliumMap):
     global PLOTTED_DEVICES
     PLOTTED_DEVICES += 1
 
-def getOpacityDependingOnTime(lastConnectionDate):
+def calculate_marker_opacity(lastConnectionDate):
     # The older the last connection date, the more transparent the marker
     timeDifference = datetime.now() - datetime.fromtimestamp(lastConnectionDate)
     max_time_difference = timedelta(hours=0, minutes=MINUTES_BEFORE_MAX_DIM)
@@ -151,7 +160,7 @@ def getOpacityDependingOnTime(lastConnectionDate):
     time_fraction = timeDifference / max_time_difference
     return max_opacity - (time_fraction * opacity_range)
     
-def createFoliumMap():
+def create_folium_map():
     map = folium.Map(location=(DEFAULT_LATITUDE, DEFAULT_LONGITUDE), zoom_start=DEFAULT_ZOOM)
     if DEFAULT_MARKER:        
         folium.Marker(location=(DEFAULT_MARKER_LATITUDE, DEFAULT_MARKER_LONGITUDE), popup=DEFAULT_MARKER_NAME).add_to(map)
@@ -166,19 +175,22 @@ def createFoliumMap():
     # map.get_root().add_child(legend)
     return map
 
-def retrieveAndPlotDeviceLocation(device, bearerToken, foliumMap):
+def retrieve_and_plot_device_location(device, bearerToken, foliumMap):
     try:        
-        deviceLocation = GetDeviceLocation(device['deviceId'],bearerToken)
-        plotDeviceLocation(device, deviceLocation, foliumMap)
+        deviceLocation = get_device_location(device['deviceId'],bearerToken)
+        plot_device_location(device, deviceLocation, foliumMap)
     except:
         print(f"Failed to retrieve location for {device['userName']}")
 
 def main():
+    # Call the method to initialize the global variables
+    load_environment_variables()
+    
     global PLOTTED_DEVICES
     PLOTTED_DEVICES = 0
     
-    bearerToken = GetKnoxBearerToken()
-    deviceList = GetKnoxDeviceList(bearerToken)
+    bearerToken = get_knox_bearer_token()
+    deviceList = get_knox_device_list(bearerToken)
 
     onlineDevices = []
     for device in deviceList:        
@@ -189,7 +201,7 @@ def main():
     print(f"Total devices: {len(deviceList)}")
     print(f"Online devices: {len(onlineDevices)}")
     
-    foliumMap = createFoliumMap()
+    foliumMap = create_folium_map()
     
     threads = []
     for onlineDevice in onlineDevices:       
@@ -199,7 +211,7 @@ def main():
             #TODO: Implement rate limiting
             print("Rate limit exceeded")
             break
-        thread = threading.Thread(target=retrieveAndPlotDeviceLocation, args=(onlineDevice, bearerToken, foliumMap))
+        thread = threading.Thread(target=retrieve_and_plot_device_location, args=(onlineDevice, bearerToken, foliumMap))
         thread.start()
         threads.append(thread)
     

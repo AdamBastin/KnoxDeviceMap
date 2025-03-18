@@ -22,7 +22,6 @@ This web application combines all of your Samsung Knox Manage devices onto a sin
 
 Docker Compose
 ```
-version: '3.9'
 services:
     knox-device-map:
         image: 'adambastin/knox-device-map'

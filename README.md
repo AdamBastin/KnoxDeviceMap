@@ -50,4 +50,4 @@ Docker run
 ## Libraries
 - Folium
 - Flask
-- Gencoder
+- Geocoder

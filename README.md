@@ -50,4 +50,3 @@ Docker run
 ## Libraries
 - Folium
 - Flask
-- Geocoder
